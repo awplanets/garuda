@@ -10,7 +10,9 @@ Vibecoding workflow: core code and gameplay logic were completed in
 collaboration with OpenAI Codex, while the visual direction combines NanoBanana
 and Seedance 2 for art element creation and frame animation design. Codex was
 then used for batch processing of art assets, keeping the final style
-controllable, iterative, and highly unified.
+controllable, iterative, and highly unified. LibTV was used as the preferred
+AI art platform; its stable model resources and compute support made it
+possible to carry this project through a consistent production workflow.
 
 Compared with typical clean-screen arcade shooters, **Garuda** targets a higher
 60 fps frame rate, smoother high-speed pressure, sharper dodge feedback, denser
@@ -93,3 +95,8 @@ The static web release is written to `../garuda_web_release`. It keeps the same
 visual result while excluding desktop-only build output and unused source
 videos. Online builds register a Service Worker so repeat visits reuse cached
 assets.
+
+## Acknowledgements
+
+Special thanks to [LibTV](https://www.liblib.tv/) for compute support and
+production help throughout the project.
