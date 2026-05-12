@@ -1,9 +1,41 @@
-Garuda
-======
+# Garuda: Apocalypse of Gods
 
-A fullscreen vertical arcade shooter built as a 9:16 browser game.
+![Garuda key art](docs/garuda-key-art.png)
 
-Controls:
+[Play Garuda online](https://awplanets.github.io/garuda/)
+
+**Garuda** is a STG + Roguelike vertical space shooter built with AI throughout
+the full production pipeline. The development layer was constructed through a
+Vibecoding workflow: core code and gameplay logic were completed in
+collaboration with OpenAI Codex, while the visual direction combines NanoBanana
+and Seedance 2 for art element creation and frame animation design. Codex was
+then used for batch processing of art assets, keeping the final style
+controllable, iterative, and highly unified.
+
+Compared with typical clean-screen arcade shooters, **Garuda** targets a higher
+60 fps frame rate, smoother high-speed pressure, sharper dodge feedback, denser
+tactical structure inside bullet-heavy combat, and a more fluid Roguelike
+growth curve.
+
+![Garuda gameplay showcase](docs/garuda-gameplay-showcase.png)
+
+## Roguelike Builds
+
+More than six random talent paths can create different shooting styles:
+
+- **Bullet Storm Assault**: ultra-high fire rate and coverage-based firepower
+  suppress enemies, forming a near-storm of bullets across the screen.
+- **Laser Ricochet**: refraction and chaining allow the laser to keep jumping
+  between enemy groups for continuous field clearing.
+- **Endless Shield**: shield recovery, energy loops, and counter-damage help
+  the player stay nearly unkillable inside dense bullet pressure.
+- **Particle AOE**: special weapons provide sustained full-field area damage,
+  creating chained destruction across large enemy clusters.
+
+Escalating enemy difficulty and randomized enemy traits keep each run tense and
+challenging from wave to wave.
+
+## Controls
 
 - Arrow keys, WASD, or IJKL to move.
 - Space, X, C, Z, Y, or 0 to fire.
@@ -13,43 +45,21 @@ Controls:
 - P or Esc to pause.
 - F to toggle fullscreen.
 
-Run locally:
+## Local Development
 
 ```bash
 npm run dev
 ```
 
-Run as a desktop app:
-
 ```bash
-npm run app
+npm run build
 ```
-
-Package desktop builds:
-
-```bash
-npm run dist:mac
-npm run dist:win
-```
-
-Create the static web release for GitHub Pages or any CDN/static host:
 
 ```bash
 npm run web:release
 ```
 
-The web release is written to `../garuda_web_release`. It keeps the same visual
-result while excluding desktop-only build output and unused source videos.
-Online builds register a Service Worker so repeat visits reuse cached assets.
-
-The player-facing macOS build must be made on macOS with Developer ID signing
-and Apple notarization enabled. See `MAC_RELEASE.md`.
-
-Build check:
-
-```bash
-npm run build
-```
-
-The game uses `jsfxr.js` for generated sound effects and local assets from the
-`assets` directory.
+The static web release is written to `../garuda_web_release`. It keeps the same
+visual result while excluding desktop-only build output and unused source
+videos. Online builds register a Service Worker so repeat visits reuse cached
+assets.
