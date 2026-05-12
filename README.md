@@ -56,26 +56,6 @@ experience, choose a resolution based on your GPU class and available graphics
 memory. If the game feels choppy during dense waves, lower the render
 resolution first before reducing browser zoom or disabling fullscreen.
 
-Recommended presets:
-
-- **Windows integrated graphics / older laptops**: use **540 x 960** or
-  **720 x 1280**. This is best for Intel UHD/Iris Xe-class graphics, older
-  Radeon iGPUs, or systems with shared memory.
-- **Windows entry-level dedicated GPUs**: use **720 x 1280** or **810 x 1440**.
-  This fits GPUs around GTX 1050 / GTX 1650 / MX-series / RTX 2050-class
-  hardware, especially with 2-4 GB VRAM.
-- **Windows mid-range GPUs**: use **1080 x 1920**. Recommended for RTX 2060,
-  RTX 3050, RTX 3060, RTX 4050, RX 5600, RX 6600, or similar cards with 4-8 GB
-  VRAM.
-- **Windows high-end GPUs**: use **1440 x 2560** if available and stable.
-  Recommended for RTX 3070 / RTX 4070-class or stronger GPUs with 8 GB+ VRAM.
-- **MacBook Air / Mac mini with M1 or M2**: use **720 x 1280** or
-  **810 x 1440** for cooler, steadier play.
-- **MacBook Pro / Mac with M1 Pro, M2 Pro, M3, or better**: use
-  **1080 x 1920**. Higher presets can work, but 1080 x 1920 is the best
-  balance for long sessions.
-- **Intel Mac or older MacBook models**: use **540 x 960** or **720 x 1280**,
-  especially when running on battery or in a browser with many tabs open.
 
 ## Local Development
 
