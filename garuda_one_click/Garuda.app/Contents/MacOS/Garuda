@@ -1,0 +1,21 @@
+#!/bin/bash
+set -e
+
+APP_MACOS_DIR="$(cd "$(dirname "$0")" && pwd)"
+PACKAGE_ROOT="$(cd "$APP_MACOS_DIR/../../.." && pwd)"
+cd "$PACKAGE_ROOT"
+
+PORT="${PORT:-4188}"
+URL="http://127.0.0.1:${PORT}/"
+
+if command -v node >/dev/null 2>&1; then
+  open "$URL"
+  exec node "$PACKAGE_ROOT/server.mjs" "$PACKAGE_ROOT"
+fi
+
+if command -v python3 >/dev/null 2>&1; then
+  open "$URL"
+  exec python3 "$PACKAGE_ROOT/start_server.py" "$PACKAGE_ROOT" "$PORT"
+fi
+
+osascript -e 'display dialog "GARUDA needs Node.js or Python 3 to run on macOS." buttons {"OK"} default button "OK"'

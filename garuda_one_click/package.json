@@ -1,0 +1,11 @@
+{
+  "name": "garuda",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node server.mjs",
+    "build": "node --check garuda.js && node --check jsfxr.js",
+    "preview": "node server.mjs"
+  }
+}
