@@ -21,6 +21,8 @@ growth curve.
 
 ## Roguelike Builds
 
+![Garuda build icons](docs/garuda-build-icons.png)
+
 More than six random talent paths can create different shooting styles:
 
 - **Bullet Storm Assault**: ultra-high fire rate and coverage-based firepower
