@@ -76,6 +76,15 @@ visual result while excluding desktop-only build output and unused source
 videos. Online builds register a Service Worker so repeat visits reuse cached
 assets.
 
+## License
+
+Source code is licensed under the [MIT License](LICENSE).
+
+All visual, audio, video, animation, character, logo, UI, branding, and Garuda
+IP assets are proprietary and registered for copyright protection. They are not
+covered by the MIT License and may not be reused without explicit written
+permission. See [ASSET_LICENSE.md](ASSET_LICENSE.md).
+
 ## Acknowledgements
 
 Special thanks to [LibTV](https://www.liblib.tv/) for compute support and
