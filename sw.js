@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'garuda-web-2026-05-01-2';
+const CACHE_VERSION = 'garuda-web-2026-05-01-3';
 const APP_SHELL = [
   './',
   './index.html',
