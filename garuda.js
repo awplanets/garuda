@@ -2699,10 +2699,15 @@ var resultTraits = document.getElementById('result-traits');
 var nameInput = document.getElementById('player-name');
 var boardList = document.getElementById('leaderboard-list');
 var finalBoardList = document.getElementById('final-leaderboard-list');
+var boardStatus = document.getElementById('leaderboard-status');
+var finalBoardStatus = document.getElementById('final-leaderboard-status');
 var saveButton = document.getElementById('save-score');
 var gameoverNextButton = document.getElementById('gameover-next');
 var resolutionControl = document.getElementsByClassName('resolution-control')[0];
 var leaderboardKey = 'garuda.leaderboard';
+var leaderboardApi = ((window.GARUDA_LEADERBOARD_API || '') + '').replace(/\/+$/, '');
+var leaderboardCache = null;
+var leaderboardNetworkError = false;
 var pendingScore = null;
 var BGM_VOLUME = .58;
 var SFX_MASTER_VOLUME = .78;
@@ -3020,7 +3025,7 @@ function updateBgmMix()
 	battleBgm.volume += (target - battleBgm.volume) * .12;
 }
 
-function readLeaderboard()
+function readLocalLeaderboard()
 {
 	try
 	{
@@ -3032,9 +3037,14 @@ function readLeaderboard()
 	}
 }
 
-function writeLeaderboard(scores)
+function writeLocalLeaderboard(scores)
 {
 	localStorage.setItem(leaderboardKey, JSON.stringify(scores.slice(0, 10)));
+}
+
+function readLeaderboard()
+{
+	return leaderboardCache || readLocalLeaderboard();
 }
 
 function compareScores(a, b)
@@ -3042,8 +3052,94 @@ function compareScores(a, b)
 	return scoreInt(b.score) - scoreInt(a.score) || (b.wave || 0) - (a.wave || 0);
 }
 
+function normalizeLeaderboard(scores)
+{
+	if (!scores || !scores.length)
+		return [];
+	var list = [];
+	for (var i = 0; i < scores.length; i++)
+		list.push({
+			id: scores[i].id || ('score-' + i),
+			name: (scores[i].name || 'PLAYER') + '',
+			score: scoreInt(scores[i].score),
+			wave: scores[i].wave | 0,
+			date: scores[i].date || scores[i].created_at || ''
+		});
+	list.sort(compareScores);
+	return list.slice(0, 10);
+}
+
+function setLeaderboardStatus(target, text, mode)
+{
+	if (!target)
+		return;
+	target.textContent = text || '';
+	target.className = 'leaderboard-status' + (mode ? ' ' + mode : '');
+}
+
+function leaderboardStatusFor(list)
+{
+	if (leaderboardApi && leaderboardCache && !leaderboardNetworkError)
+		setLeaderboardStatus(list === finalBoardList ? finalBoardStatus : boardStatus, 'Global Rank', 'online');
+	else if (leaderboardApi && leaderboardNetworkError)
+		setLeaderboardStatus(list === finalBoardList ? finalBoardStatus : boardStatus, 'Network unavailable / Local Rank', 'error');
+	else
+		setLeaderboardStatus(list === finalBoardList ? finalBoardStatus : boardStatus, 'Local Rank', 'local');
+}
+
+function requestLeaderboard(path, options)
+{
+	if (!leaderboardApi || !window.fetch)
+		return Promise.reject(new Error('Leaderboard API is not configured.'));
+	var controller = window.AbortController ? new AbortController() : null;
+	var timeout = window.setTimeout(function()
+	{
+		if (controller)
+			controller.abort();
+	}, 6500);
+	options = options || {};
+	options.headers = options.headers || {};
+	if (controller)
+		options.signal = controller.signal;
+	return fetch(leaderboardApi + path, options).then(function(response)
+	{
+		window.clearTimeout(timeout);
+		if (!response.ok)
+			throw new Error('Leaderboard request failed: ' + response.status);
+		return response.json();
+	}, function(error)
+	{
+		window.clearTimeout(timeout);
+		throw error;
+	});
+}
+
+function fetchLeaderboard(list, highlightId)
+{
+	if (!leaderboardApi)
+	{
+		leaderboardStatusFor(list);
+		return Promise.resolve(readLeaderboard());
+	}
+	setLeaderboardStatus(list === finalBoardList ? finalBoardStatus : boardStatus, 'Loading Global Rank...', '');
+	return requestLeaderboard('/scores').then(function(data)
+	{
+		leaderboardCache = normalizeLeaderboard(data.scores || data);
+		leaderboardNetworkError = false;
+		renderLeaderboard(list, highlightId);
+		return leaderboardCache;
+	}, function()
+	{
+		leaderboardNetworkError = true;
+		renderLeaderboard(list, highlightId);
+		return readLocalLeaderboard();
+	});
+}
+
 function qualifiesForLeaderboard(score, wave, id)
 {
+	if (leaderboardApi && !leaderboardCache)
+		return true;
 	var scores = readLeaderboard();
 	scores.push({
 		id: id,
@@ -3062,6 +3158,7 @@ function qualifiesForLeaderboard(score, wave, id)
 function renderLeaderboard(list, highlightId)
 {
 	var scores = readLeaderboard();
+	leaderboardStatusFor(list);
 	list.innerHTML = '';
 	if (!scores.length)
 	{
@@ -3619,6 +3716,7 @@ function showLeaderboard()
 	l.traitChoosing = false;
 	renderLeaderboard(boardList);
 	showPanel(boardPanel);
+	fetchLeaderboard(boardList);
 }
 
 function showGameOver()
@@ -3638,6 +3736,14 @@ function showGameOver()
 	gameoverSummaryPage.className = 'gameover-page active';
 	gameoverRankPage.className = 'gameover-page';
 	renderLeaderboard(finalBoardList, l.lastSavedScoreId);
+	fetchLeaderboard(finalBoardList, l.lastSavedScoreId).then(function()
+	{
+		if (pendingScore)
+		{
+			pendingScore.qualifies = qualifiesForLeaderboard(finalScore, wave, id);
+			gameoverNextButton.textContent = pendingScore.qualifies ? 'Next' : 'Home';
+		}
+	});
 	showPanel(gameoverPanel);
 }
 
@@ -3645,25 +3751,55 @@ function saveScore()
 {
 	if (!pendingScore)
 		return;
-	var name = nameInput.value.replace(/[<>]/g, '').replace(/^\s+|\s+$/g, '') || 'PLAYER';
+	var name = nameInput.value.replace(/[<>]/g, '').replace(/^\s+|\s+$/g, '').slice(0, 12) || 'PLAYER';
 	localStorage.setItem('garuda.playerName', name);
-	var scores = readLeaderboard();
-	scores.push({
+	var entry = {
 		id: pendingScore.id,
 		name: name,
 		score: scoreInt(pendingScore.score),
 		wave: pendingScore.wave,
 		date: new Date().toISOString()
-	});
-	scores.sort(function(a, b)
+	};
+	var saveLocal = function()
 	{
-		return compareScores(a, b);
-	});
-	writeLeaderboard(scores);
-	l.lastSavedScoreId = pendingScore.id;
-	pendingScore = null;
+		var scores = readLocalLeaderboard();
+		scores.push(entry);
+		scores.sort(function(a, b)
+		{
+			return compareScores(a, b);
+		});
+		writeLocalLeaderboard(scores);
+		leaderboardCache = null;
+		leaderboardNetworkError = !leaderboardApi ? false : true;
+		l.lastSavedScoreId = entry.id;
+		pendingScore = null;
+		saveButton.disabled = true;
+		renderLeaderboard(finalBoardList, l.lastSavedScoreId);
+	};
 	saveButton.disabled = true;
-	renderLeaderboard(finalBoardList, l.lastSavedScoreId);
+	if (!leaderboardApi)
+	{
+		saveLocal();
+		return;
+	}
+	setLeaderboardStatus(finalBoardStatus, 'Uploading Score...', '');
+	requestLeaderboard('/scores', {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify(entry)
+	}).then(function(data)
+	{
+		leaderboardCache = normalizeLeaderboard(data.scores || []);
+		leaderboardNetworkError = false;
+		l.lastSavedScoreId = data.saved === false ? '' : entry.id;
+		pendingScore = null;
+		renderLeaderboard(finalBoardList, l.lastSavedScoreId);
+		if (data.saved === false)
+			setLeaderboardStatus(finalBoardStatus, 'Not Top 10 / Global Rank', 'local');
+	}, function()
+	{
+		saveLocal();
+	});
 }
 
 function showGameOverRank()
@@ -3677,6 +3813,7 @@ function showGameOverRank()
 	gameoverSummaryPage.className = 'gameover-page';
 	gameoverRankPage.className = 'gameover-page active';
 	renderLeaderboard(finalBoardList, l.lastSavedScoreId);
+	fetchLeaderboard(finalBoardList, l.lastSavedScoreId);
 	nameInput.focus();
 }
 

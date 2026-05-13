@@ -1294,6 +1294,25 @@ html.skip-logo-intro #game-ui.booting .resolution-control {
 	display: block;
 	text-align: center;
 }
+.leaderboard-status {
+	color: rgba(255,255,255,.72);
+	font: 800 12px/1.25 "Arial Black", Impact, sans-serif;
+	letter-spacing: 0;
+	margin: -8px 0 12px;
+	min-height: 16px;
+	text-align: center;
+	text-shadow: 2px 2px 0 #000;
+	text-transform: uppercase;
+}
+.leaderboard-status.online {
+	color: #48D8FF;
+}
+.leaderboard-status.local {
+	color: #FFD200;
+}
+.leaderboard-status.error {
+	color: #FF6A52;
+}
 .score-list li.highlight {
 	background: linear-gradient(90deg, rgba(255, 122, 24, .2), rgba(255, 210, 0, .08), transparent);
 	border-bottom-color: rgba(255, 210, 0, .7);
@@ -1508,6 +1527,7 @@ html.skip-logo-intro #game-ui.booting .resolution-control {
 	</div>
 	<section id="leaderboard-panel" class="ui-panel">
 		<h2 class="ui-title">Rank</h2>
+		<p class="leaderboard-status" id="leaderboard-status"></p>
 		<ol class="score-list" id="leaderboard-list"></ol>
 		<div class="ui-actions row">
 			<button class="ui-button" id="leaderboard-start" type="button">Game Start</button>
@@ -1553,6 +1573,7 @@ html.skip-logo-intro #game-ui.booting .resolution-control {
 				<button class="ui-button" id="save-score" type="button">Save</button>
 				<button class="ui-button" id="restart-game" type="button">Restart</button>
 			</div>
+			<p class="leaderboard-status" id="final-leaderboard-status"></p>
 			<ol class="score-list" id="final-leaderboard-list"></ol>
 		</div>
 	</section>
@@ -1567,6 +1588,9 @@ html.skip-logo-intro #game-ui.booting .resolution-control {
 </p>
 
 <!-- I merged both scripts to a single file and used Closure Compiler to compress it. This also makes it run a lot faster. -->
+<script>
+window.GARUDA_LEADERBOARD_API = '';
+</script>
 <script src="jsfxr.js"></script>
 <script src="garuda.js"></script>
 
