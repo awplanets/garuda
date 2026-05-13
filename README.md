@@ -49,26 +49,6 @@ challenging from wave to wave.
 - P or Esc to pause.
 - F to toggle fullscreen.
 
-## Global Leaderboard
-
-The game can use a global leaderboard through Cloudflare Worker + D1 while
-keeping the local browser leaderboard as an offline fallback.
-
-- Frontend reads and submits scores through `window.GARUDA_LEADERBOARD_API`.
-- If the API URL is empty or unavailable, Rank automatically falls back to
-  local browser storage.
-- The Worker stores only the global Top 10, limits player names to 12
-  characters, keeps scores and waves as integers, and rate-limits repeated
-  submissions from the same IP.
-
-Deployment files are in [`cloudflare/`](cloudflare/). After deploying the
-Worker, paste its URL into `index.html`:
-
-```html
-<script>
-window.GARUDA_LEADERBOARD_API = 'https://garuda-leaderboard.your-name.workers.dev';
-</script>
-```
 
 ## Resolution Guide
 
