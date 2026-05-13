@@ -2608,14 +2608,6 @@ function loadGeneratedArt()
 	loadBonusImage('S', 'assets/item_shell.png', 1.36);
 	loadBonusImage('B', 'assets/item_bomb.png', 1.36);
 	loadBonusImage('10', 'assets/coin.png');
-	useArtImage('assets/garuda2.png', function(image)
-	{
-		ship.image = fitArtImage(image, ship.R * 3, ship.R * 2.5);
-	});
-	useArtImage('assets/garuda_shell.png', function(image)
-	{
-		ship.shield.image = fitArtImage(image, ship.R * 3, ship.R * 2.5);
-	});
 	useArtImage('assets/enemy/enemy_bullet.png', function(image)
 	{
 		torpedos.image = fitArtImage(image, torpedos.R * 2, torpedos.R * 2);
@@ -2637,11 +2629,6 @@ function loadGeneratedArt()
 			});
 		})(i);
 	}
-	useArtImage('assets/debris-clean.png', function(image)
-	{
-		explosions.debris = image;
-	});
-
 	loadEnemyStill(0, 'assets/enemy/enemy_0.png');
 	loadEnemyStill(2, 'assets/enemy/enemy_2.png');
 	loadEnemyStill(ENEMY_DIVER_TYPE, 'assets/enemy/enemy_3_clean.webp');

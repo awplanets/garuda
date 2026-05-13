@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'garuda-web-2026-05-01-3';
+const CACHE_VERSION = 'garuda-web-2026-05-01-4';
 const APP_SHELL = [
   './',
   './index.html',
@@ -46,6 +46,19 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(request.url);
   if (!shouldCache(request, url))
     return;
+
+  if (url.pathname.endsWith('.html') || url.pathname.endsWith('.js') || url.pathname.endsWith('/')) {
+    event.respondWith(
+      fetch(request).then((response) => {
+        if (!response || response.status !== 200 || response.type === 'opaque')
+          return response;
+        const copy = response.clone();
+        caches.open(CACHE_VERSION).then((cache) => cache.put(request, copy));
+        return response;
+      }).catch(() => caches.match(request))
+    );
+    return;
+  }
 
   event.respondWith(
     caches.match(request).then((cached) => {
